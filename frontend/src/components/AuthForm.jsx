@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { signIn, signUp, updatePassword } from '../api/auth';
+import { mergeCart } from '../api/cart';
+import { fetchCartFromServer } from '../store/slices/cartSlice';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 export default function AuthForm({ mode }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -17,6 +23,7 @@ export default function AuthForm({ mode }) {
   };
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
 
     // ✅ 前端验证
@@ -73,12 +80,36 @@ export default function AuthForm({ mode }) {
       if (response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+
+        
+          // 🛒 合并购物车逻辑start
+        const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (localCart.length > 0 ) {
+          const items = localCart.map(i => ({
+            productId: i._id,
+            quantity: i.quantity,
+          }));
+        
+          try {
+            await mergeCart({ localItems: localCart }); // 合并 localStorage 与后端
+            localStorage.removeItem('cart');           // 清除 local 副本
+            dispatch(fetchCartFromServer());           // 拉取合并后的服务器购物车
+          } catch (err) {
+            console.error('Cart merge failed:', err);
+          }
+        }
+        // 🛒 合并购物车逻辑end
+
         alert(`${mode} success!`);
+        navigate('/products');  //登录成功后跳转
       }
+    
     } catch (err) {
       alert(err.response?.data?.message || 'Something went wrong');
     }
   };
+
+
 
   return (
     <div style={{ maxWidth: '400px', margin: 'auto' }}>

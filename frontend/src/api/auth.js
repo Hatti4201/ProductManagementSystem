@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // ⚠️ 根据你后端地址修改 baseURL，例如 localhost:3000
-const BASE_URL = 'http://localhost:5173/api';
+const BASE_URL = 'http://localhost:3000/api/auth';
 
 export const signIn = async (email, password) => {
   const res = await axios.post(`${BASE_URL}/signin`, { email, password });

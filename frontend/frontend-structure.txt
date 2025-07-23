@@ -1,0 +1,48 @@
+.
+├── eslint.config.js
+├── frontend-structure.txt
+├── index.html
+├── package-lock.json
+├── package.json
+├── postcss.config.cjs
+├── public
+│   └── vite.svg
+├── src
+│   ├── api
+│   │   ├── auth.js
+│   │   ├── cart.js
+│   │   ├── order.js
+│   │   ├── product.js
+│   │   └── promo.js
+│   ├── App.css
+│   ├── App.jsx
+│   ├── assets
+│   │   └── react.svg
+│   ├── components
+│   │   ├── AuthForm.jsx
+│   │   ├── CartControlButton.jsx
+│   │   ├── ErrorBoundary.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Header.jsx
+│   │   ├── Layout.jsx
+│   │   └── ProductTitle.jsx
+│   ├── context
+│   │   └── AuthContext.jsx
+│   ├── index.css
+│   ├── main.jsx
+│   ├── pages
+│   │   ├── CartPage.jsx
+│   │   ├── OrderListPage.jsx
+│   │   ├── ProductDetailPage.jsx
+│   │   ├── ProductFormPage.jsx
+│   │   ├── ProductListPage.jsx
+│   │   ├── SignInPage.jsx
+│   │   ├── SignUpPage.jsx
+│   │   └── UpdatePasswordPage.jsx
+│   └── store
+│       ├── index.js
+│       └── slices
+├── tailwind.config.js
+└── vite.config.js
+
+10 directories, 36 files

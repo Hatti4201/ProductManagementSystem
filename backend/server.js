@@ -1,6 +1,8 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+
 const connectDB = require('./config/db');
 const User = require('./models/User');
 
@@ -10,14 +12,21 @@ app.use(express.json());
 
 
 // 路由 placeholder（稍后添加）
-// app.use('/api/products', require('./routes/productRoutes'));
-// app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/test', require('./routes/testRoutes'));
+app.use('/api/promo', require('./routes/promoRoutes'));
+app.use('/api/cart', require('./routes/cartRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
 
 // test begin
 app.get('/', (req, res) => {
     res.send('API is working!Backend connected to MongoDB!');
 });
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB error:', err));
 
 // 测试获取用户数据
 app.get('/test/users', async (req, res) => {

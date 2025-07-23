@@ -11,11 +11,14 @@
 
 ### 前端
 
-```bash
+
 cd frontend
 npm install
 npm run dev
 
+### 后端
+
+```bash
 cd backend
 npm install
 npx nodemon server.js
