@@ -21,20 +21,46 @@ export default function ProductDetailPage() {
     loadProduct();
   }, [id]);
 
-  if (!product) return <div>Loading...</div>;
+  if (!product) return <div className="text-center py-10">Loading...</div>;
 
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto' }}>
-      <h2>{product.name}</h2>
-      <p>{product.description}</p>
-      <p><strong>${product.price}</strong></p>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6">Products Detail</h2>
 
-      <CartControlButton product={product} />
+      {/* ✅ 主体内容：响应式布局 */}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* 左：商品图片 */}
+        <div className="w-full md:w-1/2 rounded-2xl overflow-hidden shadow border border-gray-200">
+          <img
+            src={product.image || product.imageUrl}
+            alt={product.name}
+            className="w-full h-auto max-h-[700px] object-contain"
+          />
+        </div>
 
-      {user?.role === 'admin' && (
-        <button onClick={() => navigate(`/product/edit/${id}`)}>Edit Product</button>
-        
-      )}
+        {/* 右：商品详情 */}
+        <div className="w-full md:w-1/2 flex flex-col justify-start gap-4">
+          <p className="text-sm text-gray-500">{product.category}</p>
+          <h3 className="text-2xl font-bold">{product.name}</h3>
+          <p className="text-xl text-black font-semibold">${product.price.toFixed(2)}</p>
+          <p className="text-gray-700">{product.description}</p>
+
+          {/* Add to Cart 按钮 */}
+          <div className="mt-4">
+            <CartControlButton product={product} />
+          </div>
+
+          {/* 管理员编辑按钮 */}
+          {user?.role === 'admin' && (
+            <button
+              onClick={() => navigate(`/product/edit/${id}`)}
+              className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+            >
+              Edit Product
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

@@ -8,28 +8,24 @@ export default function ProductTile({ product, user, onDelete }) {
   const quantity = cartItems.find((i) => i._id === product._id)?.quantity || 0;
 
   return (
-    <div
-      className="bg-white border border-gray-300 rounded-lg shadow p-4 hover:shadow-md transition 
-                 cursor-pointer flex flex-col"
-    >
+    <div className="rounded-2xl overflow-hidden shadow border border-gray-200 p-4 bg-white hover:shadow-md transition flex flex-col">
       {/* 商品图片：正方形比例 */}
       <div
-        className="w-full aspect-square overflow-hidden mb-3 rounded-lg"
+        className="w-full aspect-square overflow-hidden mb-3 rounded-2xl"
         onClick={() => navigate(`/product/${product._id}`)}
       >
         <img
           src={product.image || product.imageUrl}
           alt={product.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-2xl"
         />
       </div>
 
       {/* 商品名称 + 价格 */}
       <div className="flex flex-col justify-end items-start min-h-[72px]">
         <p
-          className="text-sm text-gray-500 leading-tight line-clamp-2 "
+          className="px-2 text-sm text-gray-500 leading-snug line-clamp-2"
           onClick={() => navigate(`/product/${product._id}`)}
-          padding="0 0.5rem"
         >
           {product.name}
         </p>
@@ -47,7 +43,7 @@ export default function ProductTile({ product, user, onDelete }) {
                 e.stopPropagation();
                 navigate(`/product/edit/${product._id}`);
               }}
-              className="flex-1 text-sm bg-blue-500 text-white py-1 rounded bg-[#5C6BC0] hover:bg-[#3949AB] text-white"
+              className="flex-1 text-sm py-1 rounded bg-[#5C6BC0] text-white hover:bg-[#3949AB]"
             >
               Edit
             </button>
@@ -56,7 +52,7 @@ export default function ProductTile({ product, user, onDelete }) {
                 e.stopPropagation();
                 onDelete(product._id);
               }}
-              className="flex-1 text-sm bg-red-500 text-white py-1 rounded hover:bg-red-600"
+              className="flex-1 text-sm py-1 rounded bg-red-500 text-white hover:bg-red-600"
             >
               Delete
             </button>

@@ -68,6 +68,12 @@ export default function Header() {
               </span>
               <div className="absolute right-0 mt-1 hidden group-hover:block bg-white text-black rounded shadow py-1 z-10 min-w-[100px]">
                 <button
+                  onClick={() => navigate('/update-password')}
+                  className="block px-4 py-2 hover:bg-gray-100 text-sm w-full text-left scale-90"
+                >
+                  Update Password
+                </button>
+                <button
                   onClick={handleLogout}
                   className="block px-4 py-2 hover:bg-gray-100 text-sm w-full text-left scale-90"
                 >

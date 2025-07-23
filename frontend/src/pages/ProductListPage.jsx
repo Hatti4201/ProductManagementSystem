@@ -127,7 +127,7 @@ useEffect(() => {
       )}
       
       {/* 商品卡片列表排列 */}
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-100 gap-y-6 p-6">  
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] overflow-hidden gap-8 p-6">
         {products.map((product) => (
           <ProductTitle
             key={product._id}
