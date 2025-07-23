@@ -21,9 +21,11 @@ export default function CartControlButton({ product }) {
 
   const handleChange = (val) => {
     const safeVal = Math.max(0, Number(val));
-    if (!user) return;
-
-    dispatch(addOrUpdateCartItem({ productId: product._id, quantity: safeVal }));
+    if (user) {
+      dispatch(addOrUpdateCartItem({ productId: product._id, quantity: safeVal }));
+    } else {
+      dispatch(addToCartLocal({ ...product, quantity: safeVal }));
+    }
   };
 
   // 没加入购物车：显示按钮
