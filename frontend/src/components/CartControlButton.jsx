@@ -3,7 +3,7 @@ import { addToCartLocal, addOrUpdateCartItem, addOrUpdateCartItemLocal } from '.
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
-export default function CartControlButton({ product }) {
+export default function CartControlButton({ product, mode = 'default' }) {
   const dispatch = useDispatch();
   const { user } = useContext(AuthContext);
   const cartItems = useSelector((state) => state.cart.items);
@@ -45,10 +45,15 @@ export default function CartControlButton({ product }) {
       </button>
     );
   }
+    const adaptive = mode === 'adaptive';
 
   // 已加入购物车：数量控制
   return (
-    <div className="flex items-center space-x-2">
+    // <div className="flex items-center space-x-2"
+    // >
+    <div
+      className={"flex items-center justify-between gap-1 w-full max-w-[200px]"}
+    >
       {/* ➖ 减号 */}
       <button
         onClick={() => handleChange(quantity - 1)}
@@ -72,7 +77,7 @@ export default function CartControlButton({ product }) {
             handleChange(num);
           }
         }}
-        className="w-16 text-center border rounded"
+        className="w-16 h-8 px-2 py-1 text-center border rounded"
       />
 
       {/* ➕ 加号 */}

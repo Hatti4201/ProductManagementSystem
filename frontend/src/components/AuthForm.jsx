@@ -5,6 +5,27 @@ import { fetchCartFromServer } from '../store/slices/cartSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 
+const modeConfig = {
+  signin: {
+    title: 'Sign In',
+    showEmail: true,
+    showOldPassword: false,
+    showConfirmPassword: false,
+  },
+  signup: {
+    title: 'Sign Up',
+    showEmail: true,
+    showOldPassword: false,
+    showConfirmPassword: true,
+  },
+  update: {
+    title: 'Update Password',
+    showEmail: false,
+    showOldPassword: true,
+    showConfirmPassword: true,
+  },
+};
+
 export default function AuthForm({ mode }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -15,170 +36,153 @@ export default function AuthForm({ mode }) {
     oldPassword: '',
   });
 
+  const { title, showEmail, showOldPassword, showConfirmPassword } =
+    modeConfig[mode];
+
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validate = () => {
+    if (showEmail && !formData.email.trim()) return 'Email is required';
+    if (!formData.password.trim()) return 'Password is required';
+    if (showConfirmPassword && formData.password !== formData.confirmPassword)
+      return 'Passwords do not match';
+    if (showConfirmPassword && !formData.confirmPassword.trim())
+      return 'Please confirm your password';
+    if (showOldPassword && !formData.oldPassword.trim())
+      return 'Old password is required';
+
+    if (showEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) return 'Invalid email format';
+    }
+
+    return null;
   };
 
   const handleSubmit = async (e) => {
-    
     e.preventDefault();
-
-    // ✅ 前端验证
-    if (mode !== 'update' && !formData.email.trim()) {
-      alert('Email is required');
-      return;
-    }
-
-    if (!formData.password.trim()) {
-      alert('Password is required');
-      return;
-    }
-
-    if (mode === 'signup' || mode === 'update') {
-      if (!formData.confirmPassword.trim()) {
-        alert('Please confirm your password');
-        return;
-      }
-
-      if (formData.password !== formData.confirmPassword) {
-        alert('Passwords do not match');
-        return;
-      }
-    }
-
-    if (mode === 'update' && !formData.oldPassword.trim()) {
-      alert('Old password is required');
-      return;
-    }
-
-    if (mode !== 'update') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        alert('Please enter a valid email');
-        return;
-      }
-    }
+    const error = validate();
+    if (error) return alert(error);
 
     try {
       let response;
-
       if (mode === 'signin') {
         response = await signIn(formData.email, formData.password);
       } else if (mode === 'signup') {
         response = await signUp(formData.email, formData.password);
-      } else if (mode === 'update') {
+      } else {
         response = await updatePassword(
           formData.oldPassword,
           formData.password
         );
       }
 
-      // ✅ 成功登录后保存信息
       if (response.token) {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
 
-        
-          // 🛒 合并购物车逻辑start
+        // 购物车合并
         const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
-        if (localCart.length > 0 ) {
-          const items = localCart.map(i => ({
-            productId: i._id,
-            quantity: i.quantity,
-          }));
-        
-          try {
-            await mergeCart({ localItems: localCart }); // 合并 localStorage 与后端
-            localStorage.removeItem('cart');           // 清除 local 副本
-            dispatch(fetchCartFromServer());           // 拉取合并后的服务器购物车
-          } catch (err) {
-            console.error('Cart merge failed:', err);
-          }
+        if (localCart.length > 0) {
+          await mergeCart({ localItems: localCart });
+          localStorage.removeItem('cart');
+          dispatch(fetchCartFromServer());
         }
-        // 🛒 合并购物车逻辑end
 
-        alert(`${mode} success!`);
-        navigate('/products');  //登录成功后跳转
+        alert(`${title} success!`);
+        navigate('/products');
       }
-    
     } catch (err) {
       alert(err.response?.data?.message || 'Something went wrong');
     }
   };
 
-
-
   return (
-    <div style={{ maxWidth: '400px', margin: 'auto' }}>
-      <h2>
-        {mode === 'signin'
-          ? 'Sign In'
-          : mode === 'signup'
-          ? 'Sign Up'
-          : 'Update Password'}
-      </h2>
-      <form onSubmit={handleSubmit}>
-        {mode !== 'update' && (
+    <div className="max-w-sm mx-auto mt-12 bg-white p-6 rounded shadow-md">
+      <h2 className="text-2xl font-bold mb-6 text-center text-primary">{title}</h2>
+      <div className="w-full max-w-md bg-white p-6 rounded shadow-md">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {showEmail && (
           <div>
-            <label>Email:</label>
             <input
               type="email"
               name="email"
-              required
+              placeholder="Email"
+              className="w-full border p-2 rounded"
               value={formData.email}
               onChange={handleChange}
             />
           </div>
         )}
 
-        {mode === 'update' && (
+        <div className="gap-md" />
+
+        {showOldPassword && (
           <div>
-            <label>Old Password:</label>
             <input
               type="password"
               name="oldPassword"
-              required
+              placeholder="Old Password"
+              className="w-full border p-2 rounded"
               value={formData.oldPassword}
               onChange={handleChange}
             />
           </div>
         )}
 
+        <div className="gap-md" />
+
         <div>
-          <label>{mode === 'update' ? 'New Password:' : 'Password:'}</label>
           <input
             type="password"
             name="password"
-            required
+            placeholder={mode === 'update' ? 'New Password' : 'Password'}
+            className="w-full border p-2 rounded"
             value={formData.password}
             onChange={handleChange}
           />
         </div>
 
-        {(mode === 'signup' || mode === 'update') && (
+        <div className="gap-md" />
+
+        {showConfirmPassword && (
           <div>
-            <label>Confirm Password:</label>
             <input
               type="password"
               name="confirmPassword"
-              required
+              placeholder="Confirm Password"
+              className="w-full border p-2 rounded"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
           </div>
         )}
 
-        <button type="submit" style={{ marginTop: '16px' }}>
-          {mode === 'signin'
-            ? 'Sign In'
-            : mode === 'signup'
-            ? 'Sign Up'
-            : 'Update Password'}
+        <div className="gap-ld" />
+
+        <button
+          type="submit"
+          className="w-full bg-[#3F51B5] text-white py-2 rounded hover:bg-[#5C6BC0] transition"
+        >
+          {title}
         </button>
       </form>
+      {mode === 'signin' && (
+        <p className="text-sm text-center mt-4">
+          Don’t have an account?{' '}
+          <span
+            className="text-blue-600 hover:underline cursor-pointer"
+            onClick={() => navigate('/signup')}
+          >
+            Register here
+          </span>
+        </p>
+      )}
+      </div>
     </div>
+
   );
 }

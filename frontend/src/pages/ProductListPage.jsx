@@ -119,7 +119,11 @@ useEffect(() => {
 
 
       {user?.role === 'admin' && (
-        <button onClick={() => navigate('/product/new')}>+ Add Product</button>
+        <button 
+          onClick={() => navigate('/product/new')}
+          className='bg-[#A5D6A7] scale-90'
+          >
+            + Add Product</button>
       )}
       
       {/* 商品卡片列表排列 */}

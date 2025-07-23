@@ -9,54 +9,62 @@ export default function ProductTile({ product, user, onDelete }) {
 
   return (
     <div
-      className="bg-white border border-gray-300 rounded shadow p-4 hover:shadow-md transition 
-                 cursor-pointer w-full aspect-[4/5] flex flex-col justify-between"
+      className="bg-white border border-gray-300 rounded-lg shadow p-4 hover:shadow-md transition 
+                 cursor-pointer flex flex-col"
     >
-      {/* 商品图片 */}
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-full h-[140px] object-contain mb-3"
+      {/* 商品图片：正方形比例 */}
+      <div
+        className="w-full aspect-square overflow-hidden mb-3 rounded-lg"
         onClick={() => navigate(`/product/${product._id}`)}
-      />
+      >
+        <img
+          src={product.image || product.imageUrl}
+          alt={product.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
-      <h3 
-       className="text-lg font-semibold mb-2 min-h-[48px]"
-       onClick={() => navigate(`/product/${product._id}`)}
-      >{product.name}
-      </h3>
-      
-      <p className="text-gray-700 font-bold mb-2">${product.price.toFixed(2)}</p>
+      {/* 商品名称 + 价格 */}
+      <div className="flex flex-col justify-end items-start min-h-[72px]">
+        <p
+          className="text-sm text-gray-500 leading-tight line-clamp-2 "
+          onClick={() => navigate(`/product/${product._id}`)}
+          padding="0 0.5rem"
+        >
+          {product.name}
+        </p>
+        <p className="text-2xl font-extrabold text-black tracking-tight mt-1">
+          ${product.price.toFixed(2)}
+        </p>
+      </div>
 
-      {user?.role === 'admin' ? (
-        <div className="flex justify-between items-center">
-
-          {/* admin：编辑按钮 */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/product/edit/${product._id}`);
-            }}
-            className="text-sm bg-blue-500 text-white px-2 py-1 rounded"
-          >
-            Edit
-          </button>
-
-          {/* admin：删除按钮 */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(product._id);
-            }}
-            className="text-sm bg-red-500 text-white px-2 py-1 rounded"
-          >
-            Delete
-          </button>
-
-        </div>
-      ) : (
-        <CartControlButton product={product} />
-      )}
+      {/* 按钮区域 */}
+      <div className="mt-4">
+        {user?.role === 'admin' ? (
+          <div className="flex gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/product/edit/${product._id}`);
+              }}
+              className="flex-1 text-sm bg-blue-500 text-white py-1 rounded bg-[#5C6BC0] hover:bg-[#3949AB] text-white"
+            >
+              Edit
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(product._id);
+              }}
+              className="flex-1 text-sm bg-red-500 text-white py-1 rounded hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        ) : (
+          <CartControlButton product={product} mode="adaptive" />
+        )}
+      </div>
     </div>
   );
 }
