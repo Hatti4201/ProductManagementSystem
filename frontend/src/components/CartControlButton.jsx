@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCartLocal, addOrUpdateCartItem } from '../store/slices/cartSlice';
+import { addToCartLocal, addOrUpdateCartItem, addOrUpdateCartItemLocal } from '../store/slices/cartSlice';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
@@ -24,8 +24,8 @@ export default function CartControlButton({ product }) {
     if (user) {
       dispatch(addOrUpdateCartItem({ productId: product._id, quantity: safeVal }));
     } else {
-      dispatch(addToCartLocal({ ...product, quantity: safeVal }));
-    }
+      dispatch(addOrUpdateCartItemLocal({ ...product, quantity: safeVal }));
+    }  
   };
 
   // 没加入购物车：显示按钮
@@ -36,7 +36,7 @@ export default function CartControlButton({ product }) {
           if (user) {
             dispatch(addOrUpdateCartItem({ productId: product._id, quantity: 1 }));
           } else {
-            dispatch(addToCartLocal(product));
+            dispatch(addOrUpdateCartItemLocal({ ...product, quantity: 1 }));
           }
         }}
         className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"

@@ -30,6 +30,8 @@ export default function ProductTile({ product, user, onDelete }) {
 
       {user?.role === 'admin' ? (
         <div className="flex justify-between items-center">
+
+          {/* admin：编辑按钮 */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -39,6 +41,8 @@ export default function ProductTile({ product, user, onDelete }) {
           >
             Edit
           </button>
+
+          {/* admin：删除按钮 */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -48,6 +52,7 @@ export default function ProductTile({ product, user, onDelete }) {
           >
             Delete
           </button>
+
         </div>
       ) : (
         <CartControlButton product={product} />

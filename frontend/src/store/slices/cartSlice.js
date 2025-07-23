@@ -87,6 +87,19 @@ const cartSlice = createSlice({
         saveLocal(state.items);
       }
     },
+    // 添加/更新商品到本地状态
+    addOrUpdateCartItemLocal(state, action) {
+      const { _id, quantity = 1 } = action.payload;
+      const item = state.items.find(i => i._id === _id);
+
+      if (item) {
+        item.quantity = quantity; // 更新数量
+      } else {
+        state.items.push({ ...action.payload, quantity }); // 新增商品
+      }
+
+      saveLocal(state.items);
+    },
     // 从本地状态中删除商品
     removeFromCartLocal(state, action) {
       state.items = state.items.filter(i => i._id !== action.payload);
@@ -162,5 +175,5 @@ const cartSlice = createSlice({
 } );
 
 
-export const { addToCartLocal, updateQuantityLocal, removeFromCartLocal, clearCart } = cartSlice.actions;
+export const { addToCartLocal, updateQuantityLocal,addOrUpdateCartItemLocal, removeFromCartLocal, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
