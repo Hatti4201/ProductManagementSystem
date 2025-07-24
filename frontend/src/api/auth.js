@@ -8,8 +8,8 @@ export const signIn = async (email, password) => {
   return res.data; // 假设返回 { token, user }
 };
 
-export const signUp = async (email, password) => {
-  const res = await axios.post(`${BASE_URL}/signup`, { email, password });
+export const signUp = async (username, email, password, isAdmin) => {
+  const res = await axios.post(`${BASE_URL}/signup`, { username, email, password, role: isAdmin ? 'admin' : 'user' });
   return res.data;
 };
 

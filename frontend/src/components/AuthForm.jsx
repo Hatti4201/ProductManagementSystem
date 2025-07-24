@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { signIn, signUp, updatePassword } from '../api/auth';
 import { mergeCart } from '../api/cart';
 import { fetchCartFromServer } from '../store/slices/cartSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { AuthContext } from '../context/AuthContext';
 
 const modeConfig = {
   signin: {
@@ -30,20 +31,25 @@ export default function AuthForm({ mode }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
     oldPassword: '',
+    isAdmin: false,
   });
 
   const { title, showEmail, showOldPassword, showConfirmPassword } =
     modeConfig[mode];
+
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 验证表单数据
   const validate = () => {
     if (showEmail && !formData.email.trim()) return 'Email is required';
     if (!formData.password.trim()) return 'Password is required';
@@ -72,7 +78,12 @@ export default function AuthForm({ mode }) {
       if (mode === 'signin') {
         response = await signIn(formData.email, formData.password);
       } else if (mode === 'signup') {
-        response = await signUp(formData.email, formData.password);
+        response = await signUp(
+          formData.username, 
+          formData.email, 
+          formData.password,
+          formData.isAdmin
+        );
       } else {
         response = await updatePassword(
           formData.oldPassword,
@@ -82,7 +93,7 @@ export default function AuthForm({ mode }) {
 
       if (response.token) {
         localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
+        login(response.user);
 
         // 购物车合并
         const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -105,6 +116,26 @@ export default function AuthForm({ mode }) {
       <h2 className="text-2xl font-bold mb-6 text-center text-primary">{title}</h2>
       <div className="w-full max-w-md bg-white p-6 rounded shadow-md">
       <form onSubmit={handleSubmit} className="space-y-4">
+
+        <div className="gap-ld" />
+
+        {/* signup: username */}
+        {mode === 'signup' && (
+          <div>
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              className="w-full border p-2 rounded"
+              value={formData.username}
+              onChange={handleChange}
+            />
+          </div>
+        )}
+
+        <div className="gap-md" />
+
+        {/* email */}
         {showEmail && (
           <div>
             <input
@@ -120,6 +151,7 @@ export default function AuthForm({ mode }) {
 
         <div className="gap-md" />
 
+        {/* oldpassword */}
         {showOldPassword && (
           <div>
             <input
@@ -135,6 +167,7 @@ export default function AuthForm({ mode }) {
 
         <div className="gap-md" />
 
+        {/* password */}
         <div>
           <input
             type="password"
@@ -148,6 +181,7 @@ export default function AuthForm({ mode }) {
 
         <div className="gap-md" />
 
+        {/* confirm password */}
         {showConfirmPassword && (
           <div>
             <input
@@ -161,8 +195,28 @@ export default function AuthForm({ mode }) {
           </div>
         )}
 
-        <div className="gap-ld" />
+        <div className="gap-md" />
 
+        {/* signup: isAdmin */}
+        {mode === 'signup' && (
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name="isAdmin"
+              id="isAdmin"
+              checked={formData.isAdmin}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, isAdmin: e.target.checked }))
+              }
+            />
+            <label htmlFor="isAdmin" className="text-sm">
+              Register as Admin
+            </label>
+          </div>
+        )}
+
+
+        {/* submit button */}
         <button
           type="submit"
           className="w-full bg-[#3F51B5] text-white py-2 rounded hover:bg-[#5C6BC0] transition"
@@ -170,6 +224,7 @@ export default function AuthForm({ mode }) {
           {title}
         </button>
       </form>
+
       {mode === 'signin' && (
         <p className="text-sm text-center mt-4">
           Don’t have an account?{' '}

@@ -9,6 +9,9 @@ export default function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const [menuOpen, setMenuOpen] = useState(false); // 控制是否展开下拉
+  const toggleMenu = () => setMenuOpen((prev) => !prev); // 点击切换开关
+  const closeMenu = () => setMenuOpen(false); // 可选：点击后关闭
 
   const cart = useSelector((state) => state.cart.items);
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
@@ -62,17 +65,24 @@ export default function Header() {
         {/* 右：用户/订单/购物车 */}
         <div className="flex items-center gap-4 flex-shrink-0">
           {user ? (
-            <div className="relative group">
-              <span className="text:[#F3E5F5] cursor-pointer font-medium group-hover:underline whitespace-nowrap">
+            <div className="relative">
+              <span
+                onClick={toggleMenu}
+                className="text-[#F3E5F5] cursor-pointer font-medium hover:underline whitespace-nowrap select-none"
+              >
                 {user.username} ⏷
               </span>
-              <div className="absolute right-0 mt-1 hidden group-hover:block bg-white text-black rounded shadow py-1 z-10 min-w-[100px]">
+
+
+              {menuOpen && (
+              <div className="absolute right-0 mt-1 bg-white text-black rounded shadow py-1 z-10 min-w-[100px]">
                 <button
                   onClick={() => navigate('/update-password')}
                   className="block px-4 py-2 hover:bg-gray-100 text-sm w-full text-left scale-90"
                 >
                   Update Password
                 </button>
+
                 <button
                   onClick={handleLogout}
                   className="block px-4 py-2 hover:bg-gray-100 text-sm w-full text-left scale-90"
@@ -80,6 +90,7 @@ export default function Header() {
                   Sign out
                 </button>
               </div>
+              )}
             </div>
           ) : (
             <button

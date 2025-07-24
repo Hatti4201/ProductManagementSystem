@@ -8,10 +8,11 @@ const generateToken = (user) => {
   });
 };
 
+
 exports.registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role} = req.body;
   try {
-    // 检查是否已存在
+    // 检查用户是否已存在
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: 'Email already registered' });
@@ -23,7 +24,7 @@ exports.registerUser = async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      role: 'user',
+      role: role === 'admin'? 'admin':'user', // 默认角色为用户，选择为管理员
     });
 
     const token = generateToken(user);
@@ -38,6 +39,7 @@ exports.registerUser = async (req, res) => {
       },
     });
   } catch (err) {
+    console.error('Register error:', err);
     res.status(500).json({ message: 'Register failed', error: err.message });
   }
 };
