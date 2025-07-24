@@ -36,7 +36,7 @@ export default function ProductTile({ product, user, onDelete }) {
 
       {/* 按钮区域 */}
       <div className="mt-4">
-        {user?.role === 'admin' ? (
+        {user?.role === 'admin' && (
           <div className="flex gap-2">
             <button
               onClick={(e) => {
@@ -57,9 +57,8 @@ export default function ProductTile({ product, user, onDelete }) {
               Delete
             </button>
           </div>
-        ) : (
-          <CartControlButton product={product} mode="adaptive" />
         )}
+          <CartControlButton product={product} mode="adaptive" />
       </div>
     </div>
   );
